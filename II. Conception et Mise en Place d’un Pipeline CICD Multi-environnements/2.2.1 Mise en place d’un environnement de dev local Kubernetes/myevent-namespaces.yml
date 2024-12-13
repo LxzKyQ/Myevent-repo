@@ -1,0 +1,15 @@
+---
+apiVersion: v1  # Spécifie que cette ressource utilise l'API de version v1.
+kind: Namespace  # Indique que cette ressource est un namespace.
+metadata:
+  name: myevent-dev  # Nom unique pour identifier ce namespace.
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: myevent-prod
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: myevent-qualif

@@ -1,0 +1,16 @@
+apiVersion: v1 # Spécifie la version de l'API utilisée pour la ressource Service.
+kind: Service # Définit qu'il s'agit d'une ressource de type Service.
+metadata:
+  name: myevent-service # Nom du service, utilisé pour identifier cette ressource dans le namespace.
+  namespace: {{ .Values.namespace }} # Namespace où le service sera créé, défini dynamiquement via Helm.
+spec:
+  selector:
+    app: myevent # Le service sélectionne les Pods ayant le label `app: myevent`.
+    env: {{ if .Values.useBlue }}blue{{ else }}green{{ end }} 
+    # Le label `env` permet de différencier les versions Blue et Green, et de router le trafic vers l'une ou l'autre en fonction de la variable Helm `useBlue`.
+  ports:
+  - protocol: TCP # Définit le protocole utilisé par le service (TCP pour la plupart des applications web).
+    port: 80 # Port sur lequel le service est exposé à l'intérieur du cluster.
+    targetPort: 80 # Port auquel le conteneur écoute dans les Pods cibles.
+  type: NodePort # Type de service permettant d'exposer l'application sur un port du nœud.
+  nodePort: {{ .Values.nodePort }} # NodePort spécifique configuré dynamiquement via Helm, exposé pour l'accès externe.

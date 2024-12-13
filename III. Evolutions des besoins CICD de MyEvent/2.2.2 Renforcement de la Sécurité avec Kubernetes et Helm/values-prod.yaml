@@ -1,0 +1,30 @@
+replicas: 3  # Définit le nombre de répliques pour le déploiement. Cela permet de garantir la haute disponibilité de l'application.
+
+image:
+  stable: "myevent:v1"  # Image Docker stable utilisée pour la version stable de l'application.
+  canary: "myevent:v2"  # Image Docker pour la version Canary, utilisée pour tester des changements avant une mise en production complète.
+
+ports:
+  containerPort: 80  # Port exposé à l'intérieur du conteneur où l'application écoute.
+  servicePort: 8080  # Port utilisé par le service Kubernetes pour exposer le conteneur.
+
+namespace: "myevent-prod"  # Namespace Kubernetes où les ressources seront déployées. Cela permet de mieux organiser les ressources.
+
+ingress:
+  host: "myevent-prod.local"  # Host utilisé par l'Ingress pour router les requêtes vers l'application.
+  nginx:
+    canaryWeight: "80"  # Poids du trafic redirigé vers la version Canary (80%). Le reste (20%) ira à la version stable.
+
+rbac:
+  user: developer  # Utilisateur ou rôle RBAC défini pour restreindre l'accès ou accorder des permissions spécifiques.
+
+securityContext:
+  runAsUser: 0  # L'utilisateur sous lequel les processus s'exécuteront dans le conteneur. L'utilisateur "0" est généralement root.
+  runAsGroup: 0  # Groupe sous lequel les processus s'exécuteront dans le conteneur. Groupe "0" est également root.
+  fsGroup: 2000  # Groupe assigné aux volumes montés pour les permissions de fichier.
+  allowPrivilegeEscalation: false  # Empêche les processus de s'exécuter avec des privilèges accrus, même si un binaire SETUID est utilisé.
+  capabilities:
+    drop:
+      - ALL  # Supprime toutes les capacités Linux non nécessaires pour renforcer la sécurité.
+    add:
+      - NET_BIND_SERVICE  # Autorise uniquement la capacité de lier des services réseau sur des ports inférieurs à 1024.

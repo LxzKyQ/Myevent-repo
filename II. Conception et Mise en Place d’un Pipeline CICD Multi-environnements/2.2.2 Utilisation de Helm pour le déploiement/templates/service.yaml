@@ -1,0 +1,14 @@
+apiVersion: v1 # Spécifie la version de l'API Kubernetes utilisée pour cette ressource.
+kind: Service # Définit qu'il s'agit d'une ressource de type Service, utilisée pour exposer des Pods.
+metadata:
+  name: myevent-service # Nom du service, utilisé pour identifier cette ressource.
+  namespace: {{ .Values.namespace }} # Namespace dans lequel le service sera créé, défini dynamiquement via Helm.
+spec:
+  type: NodePort # Définit le type de service. Ici, `NodePort` expose l'application sur un port spécifique du nœud Kubernetes.
+  selector:
+    app: myevent # Label utilisé pour associer ce service aux pods ayant `app: myevent` comme label.
+  ports:
+  - protocol: TCP # Protocole utilisé par le service. TCP est utilisé pour la majorité des applications web.
+    port: 80 # Port sur lequel le service est accessible à l'intérieur du cluster.
+    targetPort: 80 # Port exposé par le conteneur cible. Ici, il correspond au port du conteneur défini dans le déploiement.
+    nodePort: {{ .Values.nodePort }} # Port spécifique du nœud utilisé pour exposer le service à l'extérieur du cluster.

@@ -1,0 +1,5 @@
+namespace: myevent-qualif
+replicas: 3
+image: myevent:latest
+nodePort: 30003
+host: myevent-qualif.local

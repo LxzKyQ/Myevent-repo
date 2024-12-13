@@ -1,0 +1,63 @@
+---
+apiVersion: networking.k8s.io/v1  # Utilise l'API pour les ressources réseau dans Kubernetes.
+kind: Ingress  # Indique que cette ressource est une règle Ingress.
+metadata:
+  name: myevent-ingress  # Nom unique pour cette ressource Ingress dans ce namespace.
+  namespace: myevent-dev  # Namespace cible pour cette règle Ingress.
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /  # Réécrit l'URL pour cibler correctement l'application backend.
+spec:
+  ingressClassName: nginx  # Spécifie que cette règle doit utiliser la classe Ingress Nginx.
+  rules:
+  - host: myevent-dev.local  # Nom d'hôte utilisé pour accéder à l'application dans l'environnement de développement.
+    http:
+      paths:
+      - path: /  # Toute URL sera redirigée vers le backend spécifié.
+        pathType: Prefix  # Le préfixe de l'URL doit correspondre pour appliquer la règle.
+        backend:
+          service:
+            name: myevent-service  # Nom du service backend auquel le trafic sera routé.
+            port:
+              number: 80  # Port exposé par le service backend.
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myevent-ingress
+  namespace: myevent-prod
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: myevent-prod.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: myevent-service
+            port:
+              number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myevent-ingress
+  namespace: myevent-qualif
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: myevent-qualif.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: myevent-service
+            port:
+              number: 80

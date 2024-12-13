@@ -1,0 +1,41 @@
+apiVersion: apps/v1 # Spécifie la version de l'API Kubernetes utilisée pour le déploiement.
+kind: Deployment # Définit qu'il s'agit d'une ressource de type Deployment.
+metadata:
+  name: myevent-prod-stable # Nom du déploiement stable. Identifie la version stable dans l'environnement de production.
+  namespace: {{ .Values.namespace }} # Namespace dans lequel ce déploiement sera créé. Dynamique via Helm.
+spec:
+  replicas: {{ .Values.replicas }} # Nombre de répliques pour le déploiement. Défini via Helm.
+  selector:
+    matchLabels:
+      app: myevent-prod-stable # Sélectionne les Pods ayant ce label.
+  template:
+    metadata:
+      labels:
+        app: myevent-prod-stable # Labels associés aux Pods créés par ce déploiement. Identifie les Pods stables.
+    spec:
+      containers:
+      - name: myevent-prod-stable # Nom du conteneur stable.
+        image: {{ .Values.image.stable }} # Image Docker stable spécifiée dans le fichier `values.yaml`.
+        ports:
+          - containerPort: {{ .Values.ports.containerPort }} # Port sur lequel le conteneur écoute. Défini dynamiquement.
+---
+apiVersion: apps/v1 # Spécifie la version de l'API Kubernetes utilisée pour le déploiement.
+kind: Deployment # Définit qu'il s'agit d'une ressource de type Deployment.
+metadata:
+  name: myevent-prod-canary # Nom du déploiement Canary. Identifie la version en test dans l'environnement de production.
+  namespace: {{ .Values.namespace }} # Namespace dans lequel ce déploiement sera créé. Dynamique via Helm.
+spec:
+  replicas: {{ .Values.replicas }} # Nombre de répliques pour le déploiement Canary. Défini via Helm.
+  selector:
+    matchLabels:
+      app: myevent-prod-canary # Sélectionne les Pods ayant ce label.
+  template:
+    metadata:
+      labels:
+        app: myevent-prod-canary # Labels associés aux Pods créés par ce déploiement. Identifie les Pods Canary.
+    spec:
+      containers:
+      - name: myevent-prod-canary # Nom du conteneur Canary.
+        image: {{ .Values.image.canary }} # Image Docker Canary spécifiée dans le fichier `values.yaml`.
+        ports:
+          - containerPort: {{ .Values.ports.containerPort }} # Port sur lequel le conteneur écoute. Défini dynamiquement.

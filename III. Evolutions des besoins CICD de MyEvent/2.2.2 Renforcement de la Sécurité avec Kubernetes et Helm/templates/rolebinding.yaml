@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1  # Version de l'API pour gérer les ressources RBAC (Role-Based Access Control) dans Kubernetes.
+kind: RoleBinding  # Type de ressource. Un RoleBinding associe un rôle à un utilisateur, un groupe ou un compte de service.
+
+metadata:
+  name: {{ .Release.Name }}-pod-reader-binding  # Nom du RoleBinding. Il inclut le nom de la release Helm pour assurer l'unicité dans le cluster.
+  namespace: {{ .Values.namespace | default "default" }}  # Namespace où le RoleBinding est créé. Défini dans `values.yaml` ou "default" si non spécifié.
+
+subjects:
+  - kind: User  # Définit le type de sujet auquel les permissions sont accordées (ici, un utilisateur spécifique).
+    name: {{ .Values.rbac.user | default "developer" }}  # Nom de l'utilisateur cible, configurable via `values.yaml` ou "developer" par défaut.
+    apiGroup: rbac.authorization.k8s.io  # Groupe d'API pour les ressources RBAC. Ici, cela spécifie que le sujet est lié à RBAC.
+
+roleRef:
+  kind: Role  # Référence un rôle Kubernetes existant. Le rôle contient les permissions spécifiques.
+  name: {{ .Release.Name }}-pod-reader  # Nom du rôle à lier. Généralement lié à la release Helm pour maintenir la cohérence.
+  apiGroup: rbac.authorization.k8s.io  # Groupe d'API du rôle. Cela indique que le rôle appartient aux ressources RBAC.

@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1 # Spécifie la version de l'API utilisée pour l'objet Ingress.
+kind: Ingress # Définit qu'il s'agit d'une ressource de type Ingress.
+metadata:
+  name: myevent-ingress # Nom de l'Ingress, utilisé pour identifier cette ressource.
+  namespace: {{ .Values.namespace }} # Namespace dans lequel l'Ingress sera créé, défini dynamiquement via Helm (fichier values.yaml).
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: / # Annotation spécifique au contrôleur Nginx pour réécrire l'URL de la requête entrante vers la racine.
+spec:
+  ingressClassName: nginx # Spécifie que ce Ingress utilisera le contrôleur Nginx.
+  rules: # Définit les règles pour router le trafic vers le bon service.
+  - host: {{ .Values.host }} # Nom d'hôte pour lequel l'Ingress s'applique, configuré dynamiquement via Helm.
+    http:
+      paths:
+      - path: / # Chemin de l'URL à router. Ici, toutes les requêtes vers `/` ou ses sous-chemins sont redirigées.
+        pathType: Prefix # Type de chemin, ici `Prefix` signifie que tous les chemins commençant par `/` sont pris en charge.
+        backend:
+          service:
+            name: myevent-service # Nom du service cible vers lequel le trafic sera redirigé.
+            port:
+              number: 80 # Port sur lequel le service écoute.

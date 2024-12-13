@@ -1,0 +1,6 @@
+namespace: myevent-prod
+replicas: 3
+image: myevent:latest
+nodePort: 30002
+host: myevent-prod.local
+

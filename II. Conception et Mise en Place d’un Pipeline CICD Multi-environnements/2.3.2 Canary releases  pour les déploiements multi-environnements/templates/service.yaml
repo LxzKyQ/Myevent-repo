@@ -1,0 +1,31 @@
+apiVersion: v1 # Version de l'API utilisée pour la ressource Service.
+kind: Service # Définit qu'il s'agit d'une ressource de type Service.
+metadata:
+  name: myevent-prod-stable-svc # Nom du service, identifiable comme point de connexion pour la version stable.
+  namespace: {{ .Values.namespace }} # Namespace où le service est créé. Dynamique via Helm.
+  labels:
+    app: myevent-prod-stable # Label associé pour identifier et organiser le service stable.
+spec:
+  type: ClusterIP # Type de service utilisé pour exposer les Pods uniquement au sein du cluster.
+  selector:
+    app: myevent-prod-stable # Associe ce service aux Pods ayant ce label.
+  ports:
+    - protocol: TCP # Protocole utilisé, ici TCP, standard pour les applications web.
+      port: {{ .Values.ports.servicePort }} # Port accessible au sein du cluster pour ce service.
+      targetPort: {{ .Values.ports.containerPort }} # Port du conteneur dans les Pods cibles.
+---
+apiVersion: v1 # Version de l'API utilisée pour la ressource Service.
+kind: Service # Définit qu'il s'agit d'une ressource de type Service.
+metadata:
+  name: myevent-prod-canary-svc # Nom du service, identifiable comme point de connexion pour la version canary.
+  namespace: {{ .Values.namespace }} # Namespace où le service est créé. Dynamique via Helm.
+  labels:
+    app: myevent-prod-canary # Label associé pour identifier et organiser le service canary.
+spec:
+  type: ClusterIP # Type de service utilisé pour exposer les Pods uniquement au sein du cluster.
+  selector:
+    app: myevent-prod-canary # Associe ce service aux Pods ayant ce label.
+  ports:
+    - protocol: TCP # Protocole utilisé, ici TCP.
+      port: {{ .Values.ports.servicePort }} # Port accessible au sein du cluster pour ce service.
+      targetPort: {{ .Values.ports.containerPort }} # Port du conteneur dans les Pods cibles.

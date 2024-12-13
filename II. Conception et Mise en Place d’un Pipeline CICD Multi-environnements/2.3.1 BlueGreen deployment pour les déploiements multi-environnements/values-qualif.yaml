@@ -1,0 +1,6 @@
+namespace: myevent-qualif
+replicas: 3
+useBlue: false   # Désactiver Blue (v1)
+useGreen: true   # Activer Green (v2)
+nodePort: 30003
+host: myevent-qualif.local

@@ -1,0 +1,13 @@
+replicas: 2 # Définit le nombre de répliques (Pods) à déployer. Dans ce cas, deux Pods seront actifs.
+image:
+  stable: "myevent:v1" # L'image Docker stable (version principale) utilisée pour les déploiements réguliers.
+  canary: "myevent:v2" # L'image Docker pour la version Canary (version test ou pré-production).
+ports:
+  containerPort: 80 # Le port utilisé par le conteneur pour exposer le service.
+  servicePort: 80 # Le port sur lequel le service expose le trafic à l'intérieur du cluster.
+namespace: "myevent-prod" # Le namespace Kubernetes dans lequel toutes les ressources seront déployées. Ici, l'environnement de production.
+
+ingress:
+  host: "localhost" # Nom d'hôte utilisé pour router le trafic via l'Ingress. Cela peut être un domaine ou une adresse locale pour les tests.
+  nginx:
+    canaryWeight: "50" # Définition du poids Canary (en pourcentage). Ici, 50 % du trafic est dirigé vers la version Canary (v2), et 50 % vers la version stable (v1).

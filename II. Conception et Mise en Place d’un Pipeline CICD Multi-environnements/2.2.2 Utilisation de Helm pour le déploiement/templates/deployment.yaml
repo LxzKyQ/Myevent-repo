@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment # Spécifie que cette ressource est un déploiement Kubernetes.
+metadata:
+  name: myevent-deployment # Nom du déploiement, utilisé pour identifier cette ressource.
+  namespace: {{ .Values.namespace }} # Namespace défini dynamiquement via le fichier values.yaml.
+spec:
+  replicas: {{ .Values.replicas }} # Nombre de répliques souhaitées pour le déploiement, défini dynamiquement.
+  selector:
+    matchLabels:
+      app: myevent # Critères utilisés pour sélectionner les pods qui appartiendront à ce déploiement.
+  template: # Modèle pour créer les pods.
+    metadata:
+      labels:
+        app: myevent # Labels associés aux pods créés par ce déploiement, utilisés pour les sélectionner.
+    spec:
+      containers: # Définit les conteneurs dans chaque pod.
+      - name: myevent # Nom du conteneur.
+        image: {{ .Values.image }} # Image du conteneur, spécifiée dynamiquement dans le fichier values.yaml.
+        imagePullPolicy: Never # Politique d'extraction de l'image : indique de ne pas extraire l'image, elle doit être déjà disponible localement.
+        ports:
+        - containerPort: 80 # Port exposé par le conteneur, ici le port 80 (généralement utilisé pour le HTTP).

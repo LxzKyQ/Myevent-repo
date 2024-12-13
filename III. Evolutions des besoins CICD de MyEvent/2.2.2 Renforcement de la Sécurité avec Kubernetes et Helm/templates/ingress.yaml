@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1 # Version de l'API Kubernetes utilisée pour la ressource Ingress.
+kind: Ingress # Spécifie qu'il s'agit d'une ressource de type Ingress.
+metadata:
+  name: myevent-prod-stable-ingress # Nom de l'Ingress pour le service stable.
+  namespace: {{ .Values.namespace }} # Namespace dans lequel cet Ingress est créé. Dynamique via Helm.
+spec:
+  ingressClassName: nginx # Utilise le contrôleur Ingress NGINX.
+  rules:
+  - host: {{ .Values.ingress.host }} # Nom d'hôte défini dynamiquement via Helm (exemple : `myevent.example.com`).
+    http:
+      paths:
+      - pathType: Prefix # Indique que toutes les URL commençant par le chemin spécifié seront prises en charge.
+        path: / # Définit que toutes les requêtes à `/` doivent être routées.
+        backend:
+          service:
+            name: myevent-prod-stable-svc # Nom du service backend vers lequel le trafic est dirigé.
+            port:
+              number: {{ .Values.ports.servicePort }} # Port exposé par le service stable.
+---
+apiVersion: networking.k8s.io/v1 # Version de l'API Kubernetes utilisée pour la ressource Ingress.
+kind: Ingress # Spécifie qu'il s'agit d'une ressource de type Ingress.
+metadata:
+  name: myevent-prod-canary-ingress # Nom de l'Ingress pour le service canary.
+  namespace: {{ .Values.namespace }} # Namespace dans lequel cet Ingress est créé. Dynamique via Helm.
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true" # Active le mode canary dans NGINX.
+    nginx.ingress.kubernetes.io/canary-weight: "{{ .Values.ingress.nginx.canaryWeight }}" 
+    # Poids du trafic dirigé vers la version canary. Exemple : 50 %.
+spec:
+  ingressClassName: nginx # Utilise le contrôleur Ingress NGINX.
+  rules:
+  - host: {{ .Values.ingress.host }} # Nom d'hôte défini dynamiquement (commun entre stable et canary).
+    http:
+      paths:
+      - pathType: Prefix # Indique que toutes les URL commençant par le chemin spécifié seront prises en charge.
+        path: / # Définit que toutes les requêtes à `/` doivent être routées.
+        backend:
+          service:
+            name: myevent-prod-canary-svc # Nom du service backend pour la version canary.
+            port:
+              number: {{ .Values.ports.servicePort }} # Port exposé par le service canary.

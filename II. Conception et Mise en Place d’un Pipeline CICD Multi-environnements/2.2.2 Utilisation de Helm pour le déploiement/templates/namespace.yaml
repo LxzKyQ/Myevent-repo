@@ -1,0 +1,4 @@
+apiVersion: v1 # Spécifie la version de l'API Kubernetes utilisée pour la ressource.
+kind: Namespace # Définit qu'il s'agit d'une ressource de type Namespace.
+metadata:
+  name: {{ .Values.namespace }} # Nom du namespace, défini dynamiquement via le fichier values.yaml.

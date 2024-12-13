@@ -1,0 +1,29 @@
+apiVersion: apps/v1 # Spécifie la version de l'API Kubernetes utilisée pour le déploiement.
+kind: Deployment # Définit qu'il s'agit d'une ressource de type Deployment.
+metadata:
+  name: {{ if .Values.useBlue }}myevent-deployment-blue{{ else }}myevent-deployment-green{{ end }} 
+  # Le nom du déploiement est défini dynamiquement en fonction de la variable Helm `useBlue`. 
+  # Si `useBlue` est vrai, le déploiement sera nommé `myevent-deployment-blue`, sinon `myevent-deployment-green`.
+  namespace: {{ .Values.namespace }} # Namespace dans lequel ce déploiement sera créé, défini dynamiquement via Helm.
+spec:
+  replicas: {{ .Values.replicas }} # Nombre de répliques de Pods à créer, défini dynamiquement via Helm.
+  selector:
+    matchLabels:
+      app: myevent # Label commun pour identifier les Pods appartenant à ce déploiement.
+      env: {{ if .Values.useBlue }}blue{{ else }}green{{ end }}
+      # Le label `env` est utilisé pour distinguer les versions Blue (v1) et Green (v2) dans une stratégie Blue-Green Deployment.
+  template:
+    metadata:
+      labels:
+        app: myevent # Label commun pour identifier les Pods.
+        env: {{ if .Values.useBlue }}blue{{ else }}green{{ end }} 
+        # Le label `env` distingue les Pods Blue ou Green en fonction de la valeur de `useBlue`.
+    spec:
+      containers:
+      - name: myevent # Nom du conteneur déployé.
+        image: {{ if .Values.useBlue }}myevent:v1{{ else }}myevent:v2{{ end }} 
+        # L'image Docker utilisée dépend de la variable `useBlue` :
+        # - v1 pour Blue (stable)
+        # - v2 pour Green (version alternative)
+        ports:
+        - containerPort: 80 # Le conteneur expose le port 80, typiquement utilisé pour des applications web.

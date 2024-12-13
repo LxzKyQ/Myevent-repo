@@ -1,0 +1,68 @@
+---
+# Définition du premier déploiement pour l'environnement de développement (dev)
+apiVersion: apps/v1  # Spécifie la version de l'API utilisée pour la ressource 'Deployment'
+kind: Deployment  # Indique que nous créons un déploiement Kubernetes
+metadata:
+  name: myevent-deployment  # Nom du déploiement
+  namespace: myevent-dev  # Namespace (espace de nom) utilisé pour isoler cet environnement (environnement de développement)
+spec:
+  replicas: 3  # Nombre de répliques de l'application myevent à déployer
+  selector:
+    matchLabels:
+      app: myevent  # Sélectionne les pods ayant ce label pour faire partie du déploiement
+  template:  # Gabarit des pods
+    metadata:
+      labels:
+        app: myevent  # Label ajouté aux pods pour les identifier
+    spec:
+      containers:
+      - name: myevent  # Nom du conteneur
+        image: myevent:v1  # Image Docker utilisée pour le conteneur. 
+        ports:
+        - containerPort: 80  # Port exposé par le conteneur
+
+---
+# Définition du déploiement pour l'environnement de production (prod)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myevent-deployment
+  namespace: myevent-prod  # Namespace de production, différent pour isoler cet environnement
+spec:
+  replicas: 3  # Le nombre de répliques est identique à l'environnement de développement, peut être ajusté selon les besoins
+  selector:
+    matchLabels:
+      app: myevent
+  template:
+    metadata:
+      labels:
+        app: myevent
+    spec:
+      containers:
+      - name: myevent
+        image: myevent:v1
+        ports:
+        - containerPort: 80
+
+---
+# Définition du déploiement pour l'environnement de qualification (qualif)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myevent-deployment
+  namespace: myevent-qualif  # Namespace de qualification pour tester l'application avant la mise en production
+spec:
+  replicas: 3  # Ici aussi, 3 répliques sont déployées, ce nombre peut être modifié selon les tests et la charge anticipée
+  selector:
+    matchLabels:
+      app: myevent
+  template:
+    metadata:
+      labels:
+        app: myevent
+    spec:
+      containers:
+      - name: myevent
+        image: myevent:v1
+        ports:
+        - containerPort: 80

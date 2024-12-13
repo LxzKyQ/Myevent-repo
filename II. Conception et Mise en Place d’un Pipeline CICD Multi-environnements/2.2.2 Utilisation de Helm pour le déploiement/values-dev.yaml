@@ -1,0 +1,5 @@
+namespace: myevent-dev # Définit le namespace où toutes les ressources Kubernetes seront créées pour l'environnement de développement.
+replicas: 3 # Spécifie que 3 répliques de Pods doivent être déployées pour assurer la haute disponibilité et la résilience de l'application.
+image: myevent:latest # Indique l'image Docker utilisée pour déployer l'application. `latest` peut poser des problèmes de traçabilité ; il est recommandé d'utiliser des versions spécifiques pour plus de contrôle.
+nodePort: 30001 # Définit le NodePort pour exposer le service. Assurez-vous que ce port est libre et se trouve dans la plage autorisée (30000-32767).
+host: myevent-dev.local # Définit le nom d’hôte utilisé par l'Ingress pour router les requêtes vers l'application dans l'environnement de développement.

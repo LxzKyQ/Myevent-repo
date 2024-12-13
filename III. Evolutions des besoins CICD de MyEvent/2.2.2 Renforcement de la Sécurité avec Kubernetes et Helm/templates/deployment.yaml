@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Nom du déploiement pour la version stable.
+  name: myevent-prod-stable
+  # Namespace où ce déploiement sera créé, défini dynamiquement à partir des valeurs Helm.
+  namespace: {{ .Values.namespace }}
+spec:
+  # Nombre de réplicas pour ce déploiement, configurable via le fichier values.yaml.
+  replicas: {{ .Values.replicas }}
+  selector:
+    # Les pods de ce déploiement seront sélectionnés par ce label.
+    matchLabels:
+      app: myevent-prod-stable
+  template:
+    metadata:
+      # Labels pour identifier les pods créés par ce déploiement.
+      labels:
+        app: myevent-prod-stable
+    spec:
+      # Contexte de sécurité global pour tous les conteneurs de ce pod.
+      securityContext:
+        runAsUser: {{ .Values.securityContext.runAsUser }} # UID de l'utilisateur exécutant le conteneur.
+        runAsGroup: {{ .Values.securityContext.runAsGroup }} # GID du groupe exécutant le conteneur.
+        fsGroup: {{ .Values.securityContext.fsGroup }} # Groupe propriétaire des fichiers dans le système de fichiers.
+      containers:
+      - name: myevent-prod-stable
+        # Image de conteneur pour la version stable de l'application, configurable via values.yaml.
+        image: {{ .Values.image.stable }}
+        ports:
+          # Port sur lequel le conteneur écoutera, défini dynamiquement.
+          - containerPort: {{ .Values.ports.containerPort }}
+        securityContext:
+          # Permet ou interdit l'escalade de privilèges pour ce conteneur.
+          allowPrivilegeEscalation: {{ .Values.securityContext.allowPrivilegeEscalation }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Nom du déploiement pour la version canary.
+  name: myevent-prod-canary
+  # Namespace où ce déploiement sera créé, identique à celui de la version stable.
+  namespace: {{ .Values.namespace }}
+spec:
+  # Nombre de réplicas pour ce déploiement, défini dynamiquement pour le canary (souvent inférieur à stable).
+  replicas: {{ .Values.replicas }}
+  selector:
+    # Les pods de ce déploiement seront sélectionnés par ce label.
+    matchLabels:
+      app: myevent-prod-canary
+  template:
+    metadata:
+      # Labels pour identifier les pods créés par ce déploiement.
+      labels:
+        app: myevent-prod-canary
+    spec:
+      # Contexte de sécurité global pour tous les conteneurs de ce pod.
+      securityContext:
+        runAsUser: {{ .Values.securityContext.runAsUser }} # UID de l'utilisateur exécutant le conteneur.
+        runAsGroup: {{ .Values.securityContext.runAsGroup }} # GID du groupe exécutant le conteneur.
+        fsGroup: {{ .Values.securityContext.fsGroup }} # Groupe propriétaire des fichiers dans le système de fichiers.
+      containers:
+      - name: myevent-prod-canary
+        # Image de conteneur pour la version canary de l'application, configurable via values.yaml.
+        image: {{ .Values.image.canary }}
+        ports:
+          # Port sur lequel le conteneur écoutera, défini dynamiquement.
+          - containerPort: {{ .Values.ports.containerPort }}
+        securityContext:
+          # Permet ou interdit l'escalade de privilèges pour ce conteneur.
+          allowPrivilegeEscalation: {{ .Values.securityContext.allowPrivilegeEscalation }}

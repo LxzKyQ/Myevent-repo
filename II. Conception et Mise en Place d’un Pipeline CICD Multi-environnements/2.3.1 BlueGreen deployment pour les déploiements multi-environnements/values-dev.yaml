@@ -1,0 +1,6 @@
+namespace: myevent-dev # Namespace dédié à l'environnement de développement. Permet d'isoler les ressources Kubernetes pour cet environnement.
+replicas: 3 # Nombre de répliques de Pods à déployer, garantissant une haute disponibilité et une résilience accrue.
+useBlue: true # Active le déploiement de la version Blue (v1). Utilisé pour gérer les versions dans un scénario de Blue-Green Deployment.
+useGreen: false # Désactive le déploiement de la version Green (v2). Permet de basculer entre les versions selon le besoin.
+nodePort: 30001 # Expose le service sur le port 30001 pour un accès externe via NodePort. Vérifiez que ce port est disponible.
+host: myevent-dev.local # Hôte utilisé par l'Ingress pour router les requêtes vers le service dans l'environnement de développement.

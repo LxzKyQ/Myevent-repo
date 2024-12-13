@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1 # Version de l'API utilisée pour la gestion des autorisations RBAC (Role-Based Access Control).
+kind: Role # Définit qu'il s'agit d'une ressource de type Role.
+metadata:
+  name: {{ .Release.Name }}-pod-reader # Nom du rôle, dynamique via Helm. Basé sur le nom de la release Helm.
+  namespace: {{ .Values.namespace | default "default" }} 
+  # Namespace où ce rôle est appliqué. Dynamique via Helm avec "default" comme valeur par défaut si non spécifié.
+rules:
+  - apiGroups: [""] 
+    # Le groupe d'API vide signifie qu'il s'agit de ressources du groupe "core", comme les pods, services, etc.
+    resources: ["pods"] 
+    # Ressource cible du rôle : ici, les Pods.
+    verbs: ["get", "watch", "list"] 
+    # Actions autorisées sur les Pods : 
+    # - `get` : Lire les détails d'un Pod.
+    # - `watch` : Surveiller les changements dans les Pods en temps réel.
+    # - `list` : Lister tous les Pods dans le namespace spécifié.

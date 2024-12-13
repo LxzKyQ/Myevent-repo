@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1 # Version de l'API utilisée pour la ressource Ingress.
+kind: Ingress # Définit qu'il s'agit d'une ressource de type Ingress.
+metadata:
+  name: myevent-prod-stable-ingress # Nom de l'Ingress pour le service stable.
+  namespace: {{ .Values.namespace }} # Namespace dans lequel cet Ingress est déployé. Dynamique via Helm.
+spec:
+  ingressClassName: nginx # Utilise le contrôleur Ingress NGINX.
+  rules:
+  - host: {{ .Values.ingress.host }} # Nom d'hôte défini dynamiquement. Par exemple : `myevent.example.com`.
+    http:
+      paths:
+      - pathType: Prefix # Le chemin `/` capte toutes les URL commençant par `/`.
+        path: / # Définit que tout le trafic vers ce chemin doit être routé.
+        backend:
+          service:
+            name: myevent-prod-stable-svc # Nom du service backend pour la version stable.
+            port:
+              number: {{ .Values.ports.servicePort }} # Port exposé par le service stable.
+---
+apiVersion: networking.k8s.io/v1 # Version de l'API utilisée pour la ressource Ingress.
+kind: Ingress # Définit qu'il s'agit d'une ressource de type Ingress.
+metadata:
+  name: myevent-prod-canary-ingress # Nom de l'Ingress pour le service canary.
+  namespace: {{ .Values.namespace }} # Namespace dans lequel cet Ingress est déployé. Dynamique via Helm.
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true" # Indique que cet Ingress est destiné à la version Canary.
+    nginx.ingress.kubernetes.io/canary-weight: "{{ .Values.ingress.nginx.canaryWeight }}" 
+    # Poids du trafic dirigé vers la version Canary. Par exemple : `50` pour 50 %.
+spec:
+  ingressClassName: nginx # Utilise le contrôleur Ingress NGINX.
+  rules:
+  - host: {{ .Values.ingress.host }} # Nom d'hôte commun entre stable et canary.
+    http:
+      paths:
+      - pathType: Prefix # Le chemin `/` capte toutes les URL commençant par `/`.
+        path: / # Définit que tout le trafic vers ce chemin doit être routé.
+        backend:
+          service:
+            name: myevent-prod-canary-svc # Nom du service backend pour la version Canary.
+            port:
+              number: {{ .Values.ports.servicePort }} # Port exposé par le service Canary.
